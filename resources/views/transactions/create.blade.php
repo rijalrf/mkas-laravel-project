@@ -24,13 +24,22 @@
                 <input type="hidden" name="category_id" value="{{ $selectedCategoryId }}">
             </div>
 
-            <!-- Amount Input -->
-            <div class="space-y-1.5">
+            <!-- Amount Input with Mask -->
+            <div class="space-y-1.5" x-data="{ 
+                formattedAmount: '',
+                updateAmount(val) {
+                    let numeric = val.replace(/\D/g, '');
+                    this.formattedAmount = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    document.getElementById('raw_amount').value = numeric;
+                }
+            }">
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nominal (Rp)</label>
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">Rp</span>
-                    <input type="number" name="amount" value="{{ old('amount') }}" required placeholder="0" 
+                    <input type="text" x-model="formattedAmount" @input="updateAmount($event.target.value)" 
+                        inputmode="numeric" required placeholder="0" 
                         class="w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-lg text-lg font-bold text-gray-800 focus:ring-2 focus:ring-blue-500 bg-gray-50 placeholder:text-gray-300 transition-all">
+                    <input type="hidden" name="amount" id="raw_amount">
                 </div>
                 <x-input-error :messages="$errors->get('amount')" class="mt-1" />
             </div>
@@ -43,15 +52,31 @@
                 <x-input-error :messages="$errors->get('description')" class="mt-1" />
             </div>
 
-            <!-- File Upload -->
-            <div class="space-y-1.5">
+            <!-- File Upload with Preview & Compression -->
+            <div class="space-y-1.5" x-data="{ preview: null }">
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Bukti Foto</label>
                 <div class="relative group">
-                    <input type="file" name="photo" required id="photo-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <div id="photo-preview-box" class="w-full py-8 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center gap-2 group-hover:bg-blue-50 group-hover:border-blue-200 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-300 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
-                        <p id="photo-filename" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Klik untuk Unggah</p>
-                    </div>
+                    <!-- Standard Input with Choice Hint -->
+                    <label for="photo-input" class="cursor-pointer block">
+                        <div id="photo-preview-box" class="w-full min-h-[120px] border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center gap-2 group-hover:bg-blue-50 group-hover:border-blue-200 transition-all overflow-hidden p-2">
+                            <template x-if="!preview">
+                                <div class="flex flex-col items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-300 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Kamera atau Galeri</p>
+                                </div>
+                            </template>
+                            <template x-if="preview">
+                                <div class="relative w-full h-full">
+                                    <img :src="preview" class="w-full h-40 object-cover rounded-lg shadow-sm">
+                                    <div class="absolute inset-0 bg-black/20 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="text-white text-[10px] font-bold uppercase">Ganti Foto</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </label>
+                    <input type="file" required id="photo-input" class="hidden" accept="image/*">
+                    <input type="hidden" name="photo_base64" id="compressed_photo">
                 </div>
                 <x-input-error :messages="$errors->get('photo')" class="mt-1" />
             </div>
@@ -67,14 +92,57 @@
 
     @push('scripts')
     <script>
-        document.getElementById('photo-input').onchange = evt => {
-            const [file] = document.getElementById('photo-input').files
-            if (file) {
-                document.getElementById('photo-preview-box').classList.add('bg-blue-50', 'border-blue-200');
-                document.getElementById('photo-filename').innerText = file.name;
-                document.getElementById('photo-filename').classList.replace('text-gray-400', 'text-blue-600');
-            }
-        }
+        // Image Preview & Compression
+        document.getElementById('photo-input').onchange = function(evt) {
+            const file = evt.target.files[0];
+            if (!file) return;
+
+            // Show Preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Alpine data binding fallback (using standard JS since it's outside x-data)
+                // We'll use a better approach by putting it inside the script
+            };
+
+            // Compress Logic
+            const imgReader = new FileReader();
+            imgReader.readAsDataURL(file);
+            imgReader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convert to base64
+                    const dataurl = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('compressed_photo').value = dataurl;
+                    
+                    // Update Preview UI manually for responsiveness
+                    const previewBox = document.getElementById('photo-preview-box');
+                    previewBox.innerHTML = `<img src="${dataurl}" class="w-full h-32 object-cover rounded-lg shadow-sm">`;
+                };
+            };
+        };
     </script>
     @endpush
 </x-app-layout>

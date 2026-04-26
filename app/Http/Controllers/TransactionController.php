@@ -8,6 +8,7 @@ use App\Models\Deposit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class TransactionController extends Controller
 {
@@ -25,15 +26,13 @@ class TransactionController extends Controller
             'amount' => 'required|numeric|min:1',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'photo' => 'required|image|max:2048',
+            'photo' => 'required_without:photo_base64|image|max:2048',
         ]);
 
         $user = Auth::user();
 
         // Validasi Saldo jika Kas Keluar
         if ($request->type === 'OUT') {
-            // Hitung saldo global (Admin akses semua, User akses milik bersama?)
-            // Berdasarkan App.md, status APPROVED mempengaruhi saldo.
             $totalIn = Transaction::where('status', 'APPROVED')->where('type', 'IN')->sum('amount') + 
                        Deposit::where('status', 'APPROVED')->sum('amount');
             $totalOut = Transaction::where('status', 'APPROVED')->where('type', 'OUT')->sum('amount');
@@ -44,7 +43,17 @@ class TransactionController extends Controller
             }
         }
 
-        $photoPath = $request->file('photo')->store('receipts', 'public');
+        $photoPath = null;
+        if ($request->filled('photo_base64')) {
+            $image = $request->photo_base64;
+            $image = str_replace('data:image/jpeg;base64,', '', $image);
+            $image = str_replace(' ', '+', $image);
+            $imageName = 'receipts/' . time() . '_' . uniqid() . '.jpg';
+            Storage::disk('public')->put($imageName, base64_decode($image));
+            $photoPath = $imageName;
+        } elseif ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('receipts', 'public');
+        }
 
         Transaction::create([
             'type' => $request->type,
