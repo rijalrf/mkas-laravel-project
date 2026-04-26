@@ -17,10 +17,9 @@
             [x-cloak] { display: none !important; }
             .hide-scroll::-webkit-scrollbar { display: none; }
             .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-            /* Custom Scrollbar for better UI */
-            ::-webkit-scrollbar { width: 4px; }
-            ::-webkit-scrollbar-track { background: transparent; }
-            ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+            input:focus, select:focus, textarea:focus { outline: none !important; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important; border-color: #2563eb !important; }
+            .premium-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02); }
+            .card-hover:active { transform: scale(0.98); transition: all 0.2s ease; }
         </style>
     </head>
     <body class="bg-gray-50 text-gray-900 antialiased" 
@@ -192,10 +191,15 @@
                                     <button @click="sheetView = 'menu'" class="p-1 text-gray-400 hover:text-blue-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button>
                                     <h3 class="text-base font-bold text-gray-900">Pilih Kategori</h3>
                                 </div>
-                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden divide-y divide-gray-50 shadow-sm max-h-72 overflow-y-auto hide-scroll">
-                                    @foreach(\App\Models\Category::all() as $cat)
-                                        <a :href="'/transactions/create/' + selectedType + '?category_id={{ $cat->id }}'" class="w-full text-left p-4 hover:bg-blue-50 transition-colors text-sm font-medium text-gray-700 flex items-center justify-between group">
-                                            <span>{{ $cat->name }}</span>
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden divide-y divide-gray-50 shadow-sm max-h-[60vh] overflow-y-auto hide-scroll">
+                                    @foreach(\App\Models\Category::getStaticList() as $cat)
+                                        <a :href="'/transactions/create/' + selectedType + '?category_id={{ $cat['id'] }}'" class="w-full text-left p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group">
+                                            <div class="flex items-center gap-4 text-left">
+                                                <div class="w-9 h-9 bg-{{ $cat['color'] }}-50 text-{{ $cat['color'] }}-600 rounded-lg flex items-center justify-center shrink-0">
+                                                    {!! \App\Models\Category::getIconHtml($cat['icon'], "w-5 h-5") !!}
+                                                </div>
+                                                <span class="text-sm font-semibold text-gray-700 uppercase tracking-tighter">{{ $cat['name'] }}</span>
+                                            </div>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                                         </a>
                                     @endforeach

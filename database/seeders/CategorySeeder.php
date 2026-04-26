@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -12,18 +12,17 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = [
-            ['name' => 'Umum'],
-            ['name' => 'Listrik'],
-            ['name' => 'Air'],
-            ['name' => 'Internet'],
-            ['name' => 'Konsumsi'],
-            ['name' => 'Transportasi'],
-            ['name' => 'Pemeliharaan'],
-        ];
+        $categories = Category::getStaticList();
 
-        foreach ($categories as $category) {
-            \App\Models\Category::create($category);
+        foreach ($categories as $cat) {
+            Category::updateOrCreate(
+                ['id' => $cat['id']],
+                [
+                    'name' => $cat['name'],
+                    // 'icon' and 'color' can be stored if you added columns, 
+                    // but we'll use the static list for UI logic.
+                ]
+            );
         }
     }
 }

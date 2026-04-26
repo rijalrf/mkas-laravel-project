@@ -7,15 +7,19 @@
             @csrf
             <input type="hidden" name="type" value="{{ $type }}">
 
-            <!-- Category Display (Read-only since selected in Bottom Sheet) -->
+            <!-- Category Display (Static List Mapping) -->
             <div class="space-y-1.5">
+                @php 
+                    $currentCat = collect(\App\Models\Category::getStaticList())->firstWhere('id', $selectedCategoryId);
+                @endphp
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Kategori Terpilih</label>
-                <div class="w-full px-4 py-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between">
-                    @php 
-                        $currentCat = $categories->firstWhere('id', $selectedCategoryId);
-                    @endphp
-                    <span class="text-sm font-bold text-blue-700 uppercase tracking-tight">{{ $currentCat->name ?? 'Kategori Umum' }}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-1.242 1.008-2.25 2.25-2.25h15a2.25 2.25 0 012.25 2.25v6.75A2.25 2.25 0 0119.5 21H4.5a2.25 2.25 0 01-2.25-2.25V12zm3 4.5a.75.75 0 000 1.5h13.5a.75.75 0 000-1.5H5.25z" clip-rule="evenodd" /><path d="M12 3a.75.75 0 01.75.75V6h1.5V3.75a.75.75 0 011.5 0V6h.75A2.25 2.25 0 0118.75 8.25v.75H5.25v-.75A2.25 2.25 0 017.5 6h.75V3.75a.75.75 0 011.5 0V6h1.5V3.75A.75.75 0 0112 3z" /></svg>
+                <div class="w-full px-4 py-3 bg-{{ $currentCat['color'] ?? 'blue' }}-50 border border-{{ $currentCat['color'] ?? 'blue' }}-100 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-{{ $currentCat['color'] ?? 'blue' }}-600 shadow-sm">
+                            {!! \App\Models\Category::getIconHtml($currentCat['icon'] ?? 'dots-horizontal', "w-5 h-5") !!}
+                        </div>
+                        <span class="text-sm font-bold text-{{ $currentCat['color'] ?? 'blue' }}-700 uppercase tracking-tight">{{ $currentCat['name'] ?? 'Kategori Umum' }}</span>
+                    </div>
                 </div>
                 <input type="hidden" name="category_id" value="{{ $selectedCategoryId }}">
             </div>
