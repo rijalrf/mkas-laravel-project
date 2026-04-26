@@ -48,6 +48,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment-accounts', [AdminController::class, 'managePaymentAccount'])->name('payment-accounts.index');
     Route::post('/payment-accounts', [AdminController::class, 'storePaymentAccount'])->name('payment-accounts.store');
     
+    Route::get('/categories-management', [AdminController::class, 'manageCategories'])->name('categories.index');
+    Route::post('/categories-management', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::patch('/categories-management/{category}', [AdminController::class, 'updateCategory'])->name('categories.update');
+    
     Route::get('/my-transactions', [HistoryController::class, 'myTransactions'])->name('history.my');
 });
 

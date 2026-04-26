@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Deposit;
 use App\Models\PaymentAccount;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -115,5 +116,30 @@ class AdminController extends Controller
 
         PaymentAccount::create($request->all());
         return redirect()->route('profile.edit')->with('success', 'Master rekening diperbarui!');
+    }
+
+    public function manageCategories()
+    {
+        $categories = Category::all();
+        $staticIcons = array_keys(Category::getStaticList()); // Simplified for this context
+        return view('admin.categories', compact('categories'));
+    }
+
+    public function storeCategory(Request $request)
+    {
+        $request->validate(['name' => 'required|string|unique:categories,name']);
+        Category::create([
+            'name' => $request->name,
+            'icon' => 'dots-horizontal', // Default
+            'color' => 'blue' // Default
+        ]);
+        return back()->with('success', 'Kategori baru ditambahkan!');
+    }
+
+    public function updateCategory(Request $request, Category $category)
+    {
+        $request->validate(['name' => 'required|string|unique:categories,name,'.$category->id]);
+        $category->update(['name' => $request->name]);
+        return back()->with('success', 'Kategori diperbarui!');
     }
 }

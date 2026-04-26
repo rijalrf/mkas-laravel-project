@@ -305,9 +305,8 @@
                             </div>
                         </template>
 
-                        <!-- Special: Edit Profile Form -->
                         <template x-if="sheetView === 'edit-profile'">
-                            <div class="space-y-6">
+                            <div class="space-y-6 text-left">
                                 <h3 class="text-base font-bold text-gray-900">Ubah Profil</h3>
                                 <div class="space-y-6 pb-4">
                                     @include('profile.partials.update-profile-information-form')
@@ -316,6 +315,11 @@
                                 </div>
                             </div>
                         </template>
+
+                        @stack('bottom-sheet')
+                    </div>
+                </div>
+            </div>
 
                         <!-- Special: Admin Approval Form (Transactions) -->
                         <template x-if="sheetView === 'approve-tx' || sheetView === 'reject-tx'">
