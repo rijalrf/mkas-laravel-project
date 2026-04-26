@@ -127,19 +127,31 @@ class AdminController extends Controller
 
     public function storeCategory(Request $request)
     {
-        $request->validate(['name' => 'required|string|unique:categories,name']);
+        $request->validate([
+            'name' => 'required|string|unique:categories,name',
+            'image_url' => 'nullable|url'
+        ]);
+        
         Category::create([
             'name' => $request->name,
-            'icon' => 'dots-horizontal', // Default
-            'color' => 'blue' // Default
+            'image_url' => $request->image_url,
+            'icon' => 'square',
+            'color' => 'slate'
         ]);
         return back()->with('success', 'Kategori baru ditambahkan!');
     }
 
     public function updateCategory(Request $request, Category $category)
     {
-        $request->validate(['name' => 'required|string|unique:categories,name,'.$category->id]);
-        $category->update(['name' => $request->name]);
+        $request->validate([
+            'name' => 'required|string|unique:categories,name,'.$category->id,
+            'image_url' => 'nullable|url'
+        ]);
+        
+        $category->update([
+            'name' => $request->name,
+            'image_url' => $request->image_url
+        ]);
         return back()->with('success', 'Kategori diperbarui!');
     }
 }

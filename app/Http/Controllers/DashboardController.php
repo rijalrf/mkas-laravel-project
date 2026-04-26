@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Deposit;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -98,16 +99,26 @@ class DashboardController extends Controller
         // Admin Todo Data
         $pendingTransactions = [];
         $pendingDeposits = [];
+        $unpaidUsers = [];
+
         if ($user->role === 'admin') {
             $pendingTransactions = Transaction::with(['user', 'category'])->where('status', 'PENDING')->latest()->get();
             $pendingDeposits = Deposit::with('user')->where('status', 'PENDING')->latest()->get();
+
+            // Warga yang belum bayar iuran bulan ini
+            $currentMonth = date('Y-m');
+            $paidUserIds = Deposit::where('month', $currentMonth)
+                ->where('status', '!=', 'REJECTED')
+                ->pluck('user_id')
+                ->toArray();
+            $unpaidUsers = User::whereNotIn('id', $paidUserIds)->where('role', 'user')->get();
         }
 
         return view('dashboard', compact(
             'saldoUtama', 'totalMasuk', 'totalOut', 'recentTransactions',
             'chartMonths', 'chartTotalIn', 'chartTotalOut', 'pieData',
             'categories', 'percentChange', 'thisMonthOut', 'years', 'selectedYear', 'period',
-            'pendingTransactions', 'pendingDeposits'
+            'pendingTransactions', 'pendingDeposits', 'unpaidUsers'
         ));
     }
 }

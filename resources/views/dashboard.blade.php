@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Dashboard</x-slot>
 
-    <!-- FORCED VISIBILITY SUMMARY CARD (BLUE THEME) -->
+    <!-- SUMMARY CARD (BLUE THEME) -->
     <div class="rounded-2xl p-6 text-white relative overflow-hidden mb-8" style="background-color: #2563eb;">
         <div class="relative z-10 space-y-8 text-left">
             <div class="flex justify-between items-center">
@@ -28,59 +28,71 @@
                 </div>
             </div>
         </div>
-        <!-- Decorative subtle accent -->
         <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full"></div>
     </div>
 
     <!-- ADMIN TODO SECTION -->
-    @if(Auth::user()->role === 'admin' && (count($pendingTransactions) > 0 || count($pendingDeposits) > 0))
-    <div class="space-y-4 mb-8">
-        <h4 class="text-xs font-semibold text-rose-500 uppercase tracking-widest px-1">Butuh persetujuan</h4>
-        <div class="flex items-center gap-3 overflow-x-auto hide-scroll px-1 pb-1">
-            @foreach($pendingDeposits as $dp)
-                <a href="{{ route('deposits.show', $dp->id) }}" class="flex-shrink-0 w-44 bg-white p-4 rounded-2xl border border-rose-100 active:scale-95 transition-all text-left">
-                    <p class="text-[9px] font-bold text-rose-400 uppercase tracking-wider mb-1">Iuran</p>
-                    <p class="text-sm font-semibold text-gray-800 truncate mb-2">{{ $dp->user->name }}</p>
-                    <p class="text-sm font-bold text-blue-600">Rp {{ number_format($dp->amount, 0, ',', '.') }}</p>
-                </a>
-            @endforeach
-            @foreach($pendingTransactions as $tx)
-                <a href="{{ route('history.show', $tx->id) }}" class="flex-shrink-0 w-44 bg-white p-4 rounded-2xl border border-rose-100 active:scale-95 transition-all text-left">
-                    <p class="text-[9px] font-bold text-rose-400 uppercase tracking-wider mb-1">Kas {{ strtolower($tx->type) }}</p>
-                    <p class="text-sm font-semibold text-gray-800 truncate mb-2">{{ $tx->description }}</p>
-                    <p class="text-sm font-bold text-rose-600">Rp {{ number_format($tx->amount, 0, ',', '.') }}</p>
-                </a>
-            @endforeach
+    @if(Auth::user()->role === 'admin')
+        @if(count($pendingTransactions) > 0 || count($pendingDeposits) > 0)
+        <div class="space-y-4 mb-8">
+            <h4 class="text-xs font-semibold text-rose-500 uppercase tracking-widest px-1">Butuh persetujuan</h4>
+            <div class="flex items-center gap-3 overflow-x-auto hide-scroll px-1 pb-1">
+                @foreach($pendingDeposits as $dp)
+                    <a href="{{ route('deposits.show', $dp->id) }}" class="flex-shrink-0 w-48 bg-white p-4 rounded-2xl border border-rose-100 active:scale-95 transition-all text-left shadow-sm">
+                        <p class="text-[9px] font-bold text-rose-400 uppercase tracking-wider mb-1">{{ $dp->reference_number ?? 'Iuran' }}</p>
+                        <p class="text-sm font-semibold text-gray-800 truncate mb-2">{{ $dp->user->name }}</p>
+                        <p class="text-sm font-bold text-blue-600">Rp {{ number_format($dp->amount, 0, ',', '.') }}</p>
+                    </a>
+                @endforeach
+                @foreach($pendingTransactions as $tx)
+                    <a href="{{ route('history.show', $tx->id) }}" class="flex-shrink-0 w-48 bg-white p-4 rounded-2xl border border-rose-100 active:scale-95 transition-all text-left shadow-sm">
+                        <p class="text-[9px] font-bold text-rose-400 uppercase tracking-wider mb-1">{{ $tx->reference_number ?? 'Kas' }}</p>
+                        <p class="text-sm font-semibold text-gray-800 truncate mb-2">{{ $tx->description }}</p>
+                        <p class="text-sm font-bold text-rose-600">Rp {{ number_format($tx->amount, 0, ',', '.') }}</p>
+                    </a>
+                @endforeach
+            </div>
         </div>
-    </div>
+        @endif
+
+        <!-- UNPAID USERS LIST -->
+        @if(count($unpaidUsers) > 0)
+        <div class="space-y-4 mb-8">
+            <h4 class="text-xs font-semibold text-amber-600 uppercase tracking-widest px-1">Belum bayar iuran ({{ date('F') }})</h4>
+            <div class="flex items-center gap-3 overflow-x-auto hide-scroll px-1 pb-1">
+                @foreach($unpaidUsers as $u)
+                    <div class="flex-shrink-0 w-32 bg-amber-50/50 p-3 rounded-2xl border border-amber-100 flex flex-col items-center gap-2">
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-amber-600 font-bold border border-amber-100 uppercase text-xs">
+                            {{ substr($u->name, 0, 2) }}
+                        </div>
+                        <p class="text-[10px] font-semibold text-gray-700 truncate w-full text-center">{{ $u->name }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
     @endif
 
-    <!-- CATEGORY GRID (ROBUST SOFT COLORS) -->
+    <!-- CATEGORY GRID (CLEAN NO-BG) -->
     <div class="space-y-4 mb-8">
-        <h4 class="text-sm font-medium text-gray-700 px-1">Kategori kas</h4>
+        <h4 class="text-sm font-medium text-gray-700 px-1 text-center">Kategori kas</h4>
         <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding-left: 4px; padding-right: 4px;">
             @foreach(\App\Models\Category::getStaticList() as $cat)
                 @php
-                    $c = match($cat['color']) {
-                        'blue' => 'bg-blue-50 border-blue-100',
-                        'amber' => 'bg-amber-50 border-amber-100',
-                        'emerald' => 'bg-emerald-50 border-emerald-100',
-                        'indigo' => 'bg-indigo-50 border-indigo-100',
-                        'rose' => 'bg-rose-50 border-rose-100',
-                        'sky' => 'bg-sky-50 border-sky-100',
-                        'violet' => 'bg-violet-50 border-violet-100',
-                        'orange' => 'bg-orange-50 border-orange-100',
-                        default => 'bg-gray-50 border-gray-100',
-                    };
+                    $staticModel = \App\Models\Category::find($cat['id']);
                 @endphp
                 <button onclick="window.location='{{ route('history.index') }}?category_id={{ $cat['id'] }}'" 
-                    class="flex flex-col items-center gap-2 active:scale-95 transition-all text-center">
-                    <div class="w-16 h-16 {{ $c }} border rounded-[24px] flex items-center justify-center shadow-none">
-                        <div class="w-6 h-6 flex items-center justify-center text-gray-900">
-                            {!! \App\Models\Category::getIconHtml($cat['icon'], "w-full h-full") !!}
+                    class="flex flex-col items-center gap-2 active:scale-95 transition-all text-center group">
+                    <div class="w-16 h-16 bg-transparent border border-gray-200 rounded-[24px] flex items-center justify-center shadow-none group-hover:border-blue-500 group-hover:bg-blue-50 transition-all overflow-hidden">
+                        <div class="w-7 h-7 flex items-center justify-center text-gray-900">
+                            @if($staticModel && $staticModel->image_url)
+                                <img src="{{ $staticModel->image_url }}" class="w-full h-full object-cover">
+                            @else
+                                {!! \App\Models\Category::getIconHtml($cat['icon'], "w-full h-full") !!}
+                            @endif
                         </div>
                     </div>
-                    <span class="text-[10px] font-medium text-gray-600 text-center leading-tight h-8 flex items-center justify-center">
+                    <span class="text-[10px] font-medium text-gray-600 text-center leading-tight h-8 flex items-center justify-center px-1">
                         {{ $cat['name'] }}
                     </span>
                 </button>
@@ -152,7 +164,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const chartFont = { size: 10, weight: '500', family: "'Inter', sans-serif" };
+            const chartFont = { size: 10, weight: '500', family: "'Plus Jakarta Sans', sans-serif" };
             new Chart(document.getElementById('lineChart'), {
                 type: 'line',
                 data: { labels: {!! json_encode($chartMonths) !!}, datasets: [

@@ -29,6 +29,28 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
             </a>
 
+            <!-- Theme Switcher -->
+            <div class="space-y-1.5 p-4 border-b border-gray-100">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tema aplikasi</label>
+                <div class="flex bg-gray-100 p-1 rounded-xl gap-1 mt-1" x-data="{ 
+                    current: localStorage.getItem('theme') || 'system',
+                    setTheme(t) {
+                        this.current = t;
+                        if(t === 'system') {
+                            localStorage.removeItem('theme');
+                            this.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        } else {
+                            localStorage.setItem('theme', t);
+                            this.darkMode = (t === 'dark');
+                        }
+                    }
+                }">
+                    <button @click="setTheme('light')" :class="current === 'light' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all">Light</button>
+                    <button @click="setTheme('dark')" :class="current === 'dark' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all">Dark</button>
+                    <button @click="setTheme('system')" :class="current === 'system' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all">System</button>
+                </div>
+            </div>
+
             <!-- Master Rekening (Admin Only) -->
             @if(Auth::user()->role === 'admin')
             <a href="{{ route('payment-accounts.index') }}" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors text-left group">

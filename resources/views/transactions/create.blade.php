@@ -75,7 +75,7 @@
                             </template>
                         </div>
                     </label>
-                    <input type="file" required id="photo-input" class="hidden" accept="image/*">
+                    <input type="file" required id="photo-input" class="hidden" accept="image/*" capture="environment">
                     <input type="hidden" name="photo_base64" id="compressed_photo">
                 </div>
                 <x-input-error :messages="$errors->get('photo')" class="mt-1" />
