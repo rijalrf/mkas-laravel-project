@@ -27,20 +27,20 @@
 
             <!-- Amount Input -->
             <div class="space-y-1.5" x-data="{ 
-                formattedAmount: '',
+                formattedAmount: '{{ number_format((int)($amount ?? 0), 0, ',', '.') }}',
                 updateAmount(val) {
                     let numeric = val.replace(/\D/g, '');
                     this.formattedAmount = numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                     document.getElementById('raw_amount').value = numeric;
                 }
-            }">
+            }" x-init="if('{{ $amount }}') { updateAmount('{{ $amount }}') }">
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Nominal (Rp)</label>
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">Rp</span>
                     <input type="text" x-model="formattedAmount" @input="updateAmount($event.target.value)" 
                         inputmode="numeric" required placeholder="0" 
                         class="w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-lg text-lg font-bold text-gray-800 focus:ring-2 focus:ring-blue-500 bg-gray-50 placeholder:text-gray-300 transition-all">
-                    <input type="hidden" name="amount" id="raw_amount">
+                    <input type="hidden" name="amount" id="raw_amount" value="{{ $amount ?? '' }}">
                 </div>
                 <x-input-error :messages="$errors->get('amount')" class="mt-1" />
             </div>
@@ -49,7 +49,7 @@
             <div class="space-y-1.5">
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Keterangan</label>
                 <textarea name="description" required rows="3" placeholder="Contoh: Pembelian peralatan kantor..." 
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 focus:ring-2 focus:ring-blue-500 bg-gray-50 transition-all">{{ old('description') }}</textarea>
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 focus:ring-2 focus:ring-blue-500 bg-gray-50 transition-all">{{ old('description', $description ?? '') }}</textarea>
                 <x-input-error :messages="$errors->get('description')" class="mt-1" />
             </div>
 

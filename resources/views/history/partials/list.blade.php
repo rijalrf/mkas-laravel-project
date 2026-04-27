@@ -7,14 +7,15 @@
         ];
         $colorClass = $tagColors[$tx->status] ?? $tagColors['PENDING'];
     @endphp
-    <a href="{{ route('history.show', $tx->id) }}" class="transaction-item p-4 flex items-center justify-between transition-all active:bg-gray-50" data-description="{{ strtolower($tx->description) }}">
+
+    <a href="{{ route('history.show', $tx->id) }}" class="transaction-item p-4 flex items-center justify-between transition-all active:bg-gray-50 border-b border-gray-50 last:border-0" data-description="{{ strtolower($tx->description) }}">
         <div class="flex flex-col gap-1 min-w-0 flex-1 text-left">
             <p class="text-[9px] font-bold {{ $tx->type === 'IN' ? 'text-blue-400' : 'text-rose-400' }} uppercase tracking-wider leading-none mb-0.5">
                 {{ $tx->reference_number ?? ($tx->type === 'IN' ? 'MKASIN' : 'MKASOUT') }}
             </p>
             <p class="text-sm font-semibold text-gray-800 truncate leading-tight">{{ $tx->description }}</p>
             <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                {{ $tx->category->name }} • {{ $tx->created_at->format('d M Y, H:i') }}
+                {{ $tx->category->name }} • {{ $tx->created_at->format('d M, H:i') }}
             </p>
         </div>
 

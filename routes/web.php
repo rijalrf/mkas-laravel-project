@@ -35,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/admin/transactions/{transaction}/reject', [AdminController::class, 'rejectTransaction'])->name('admin.transactions.reject');
         Route::post('/admin/deposits/{deposit}/approve', [AdminController::class, 'approveDeposit'])->name('admin.deposits.approve');
         Route::post('/admin/deposits/{deposit}/reject', [AdminController::class, 'rejectDeposit'])->name('admin.deposits.reject');
+
+        // Prioritas Pembayaran
+        Route::get('/payment-priorities', [\App\Http\Controllers\PaymentPlanController::class, 'index'])->name('payment-plans.index');
+        Route::post('/payment-priorities', [\App\Http\Controllers\PaymentPlanController::class, 'store'])->name('payment-plans.store');
     });
 });
 
@@ -53,6 +57,51 @@ Route::middleware('auth')->group(function () {
     Route::patch('/categories-management/{category}', [AdminController::class, 'updateCategory'])->name('categories.update');
     
     Route::get('/my-transactions', [HistoryController::class, 'myTransactions'])->name('history.my');
+
+    // Rute Sementara untuk Generate Data (Hapus setelah digunakan)
+    Route::get('/generate-dummy-data', function() {
+        if (Auth::user()->role !== 'admin') return "Hanya Admin yang bisa menjalankan ini.";
+        
+        $user = Auth::user();
+        $categories = \App\Models\Category::all();
+        if ($categories->isEmpty()) {
+            foreach (\App\Models\Category::getStaticList() as $c) {
+                \App\Models\Category::create(['name' => $c['name']]);
+            }
+            $categories = \App\Models\Category::all();
+        }
+
+        // Generate Transaksi dalam 3 bulan terakhir
+        for ($i = 0; $i < 15; $i++) {
+            $date = now()->subDays(rand(1, 90));
+            \App\Models\Transaction::create([
+                'type' => rand(0,1) ? 'IN' : 'OUT',
+                'amount' => rand(10, 50) * 5000,
+                'description' => 'Contoh Transaksi ' . ($i+1),
+                'category_id' => $categories->random()->id,
+                'user_id' => $user->id,
+                'status' => 'APPROVED',
+                'photo' => 'receipts/dummy.jpg', // Tambahkan placeholder foto
+                'created_at' => $date,
+                'updated_at' => $date,
+            ]);
+        }
+
+        // Generate Iuran dalam 2 tahun terakhir
+        $months = ['2025-01', '2025-06', '2026-01', '2026-04'];
+        foreach ($months as $m) {
+            \App\Models\Deposit::create([
+                'user_id' => $user->id,
+                'month' => $m,
+                'amount' => 100000,
+                'status' => 'APPROVED',
+                'description' => 'Iuran otomatis ' . $m,
+                'created_at' => \Carbon\Carbon::parse($m . '-01'),
+            ]);
+        }
+
+        return "Data dummy berhasil dibuat! Silakan cek halaman Riwayat dan Iuran.";
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -16,7 +16,9 @@ class TransactionController extends Controller
     {
         $categories = Category::all();
         $selectedCategoryId = $request->category_id;
-        return view('transactions.create', compact('categories', 'type', 'selectedCategoryId'));
+        $amount = $request->amount;
+        $description = $request->description;
+        return view('transactions.create', compact('categories', 'type', 'selectedCategoryId', 'amount', 'description'));
     }
 
     public function store(Request $request)

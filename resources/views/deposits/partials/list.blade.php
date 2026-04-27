@@ -7,6 +7,7 @@
         ];
         $colorClass = $tagColors[$dp->status] ?? $tagColors['PENDING'];
     @endphp
+
     <a href="{{ route('deposits.show', $dp->id) }}" class="p-4 flex items-center justify-between transition-all active:bg-gray-50 border-b border-gray-50 last:border-0">
         <div class="flex flex-col gap-1 min-w-0 flex-1 text-left">
             <p class="text-[9px] font-bold text-amber-500 uppercase tracking-wider leading-none mb-0.5">{{ $dp->reference_number ?? 'MKASDT' }}</p>
