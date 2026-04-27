@@ -56,4 +56,10 @@ class PaymentPlanController extends Controller
 
         return redirect()->route('payment-plans.index')->with('success', 'Rencana pembayaran berhasil ditambahkan');
     }
+
+    public function destroy(PaymentPlan $paymentPlan)
+    {
+        $paymentPlan->delete();
+        return redirect()->route('payment-plans.index')->with('success', 'Rencana pembayaran berhasil dihapus');
+    }
 }

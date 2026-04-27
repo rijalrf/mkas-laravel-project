@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Prioritas Pembayaran
         Route::get('/payment-priorities', [\App\Http\Controllers\PaymentPlanController::class, 'index'])->name('payment-plans.index');
         Route::post('/payment-priorities', [\App\Http\Controllers\PaymentPlanController::class, 'store'])->name('payment-plans.store');
+        Route::delete('/payment-priorities/{paymentPlan}', [\App\Http\Controllers\PaymentPlanController::class, 'destroy'])->name('payment-plans.destroy');
     });
 });
 
