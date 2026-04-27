@@ -14,16 +14,25 @@ class PaymentPlanController extends Controller
         $currentMonth = now()->month;
         $currentYear = now()->year;
 
-        $plans = PaymentPlan::with('category')
-            ->whereYear('created_at', $currentYear)
-            ->whereMonth('created_at', $currentMonth)
-            ->latest()
-            ->get();
+        // Ambil semua payment plan (sebagai template)
+        $allPlans = PaymentPlan::with(['category', 'transaction' => function($query) use ($currentMonth, $currentYear) {
+            $query->whereMonth('created_at', $currentMonth)
+                  ->whereYear('created_at', $currentYear)
+                  ->latest();
+        }])->get();
 
-        $activePlans = $plans->whereIn('status', ['NEW', 'PENDING', 'REJECTED']);
-        $paidPlans = $plans->where('status', 'APPROVED');
+        // List 1: Bulan Ini (Belum bayar ATAU Transaksi belum APPROVED)
+        $activePlans = $allPlans->filter(function($plan) {
+            return !$plan->transaction || $plan->transaction->status !== 'APPROVED';
+        });
 
-        $totalAmount = $plans->sum('amount');
+        // List 2: Bulan Selanjutnya (Sudah APPROVED bulan ini)
+        $paidPlans = $allPlans->filter(function($plan) {
+            return $plan->transaction && $plan->transaction->status === 'APPROVED';
+        });
+
+        // Total nominal hanya dari plan yang belum terbayar (Bulan Ini)
+        $totalAmount = $activePlans->sum('amount');
         $categories = Category::all();
 
         return view('payment-plans.index', compact('activePlans', 'paidPlans', 'totalAmount', 'categories', 'currentMonth', 'currentYear'));
