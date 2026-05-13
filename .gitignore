@@ -1,24 +1,29 @@
-*.log
-.DS_Store
+# Mengabaikan folder dependency (karena ukurannya raksasa)
+/vendor
+/node_modules
+
+# Mengabaikan file rahasia (SANGAT PENTING)
 .env
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
+*.sql
+*.sqlite
+
+# Mengabaikan file hasil build & cache lokal
 /public/build
 /public/hot
 /public/storage
 /storage/*.key
-/storage/pail
-/vendor
-Homestead.json
-Homestead.yaml
+/storage/logs/*.log
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/.phpunit.cache
+
+# Mengabaikan file dari Code Editor / OS laptop Mas
+.idea/
+.vscode/
+.DS_Store
 Thumbs.db
+npm-debug.log
+yarn-error.log

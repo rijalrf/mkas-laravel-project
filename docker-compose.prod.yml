@@ -10,7 +10,7 @@ services:
     networks:
       - default
     depends_on:
-      mkas-db:
+      mkas-mysql:
         condition: service_healthy
 
   mkas-web:
@@ -28,15 +28,15 @@ services:
     depends_on:
       - mkas-app
 
-  mkas-db:
+  mkas-mysql:
     image: mysql:8.0
-    container_name: mkas-db
+    container_name: mkas-mysql
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: mkas_db
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - mkas-dbdata:/var/lib/mysql
+      - mkas_mysqldata:/var/lib/mysql
     networks:
       - default
     healthcheck:
@@ -52,5 +52,5 @@ networks:
     external: true
 
 volumes:
-  mkas-dbdata:
+  mkas_mysqldata:
     driver: local

@@ -24,9 +24,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 RUN echo "upload_tmp_dir = /tmp" >> /usr/local/etc/php/conf.d/docker-php-upload.ini \
     && echo "sys_temp_dir = /tmp" >> /usr/local/etc/php/conf.d/docker-php-upload.ini
 
-#set permission for /tmp to avoid tempnam() error
-RUN chmod -R 1777 storage/ bootstrap/cache
-RUN chown -R $USER:www-data storage bootstrap/cache
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
