@@ -1,0 +1,23 @@
+name: Deploy Laravel ke VPS Biznet
+
+on:
+  push:
+    branches:
+      - main # Sesuaikan jika Mas pakai branch 'master'
+
+jobs:
+  deploy:
+    name: Proses Deploy via SSH v2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Eksekusi Perintah di VPS Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/deployer/application/mkas-laravel-project
+            git pull origin main
+            docker compose up -d --build

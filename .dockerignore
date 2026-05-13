@@ -1,0 +1,26 @@
+# Mengabaikan folder Git & GitHub Actions (Docker tidak butuh ini)
+.git
+.github
+
+# Mengabaikan dependency lokal laptop/VPS
+# Biarkan Docker meng-install sendiri versinya yang bersih saat build
+/vendor
+/node_modules
+
+# Mengabaikan file testing & dokumentasi (tidak terpakai di Produksi)
+/tests
+/phpunit.xml
+/README.md
+/phpstan.xml
+
+# Mengabaikan file rahasia & file pengaturan Docker itu sendiri
+.env
+docker-compose.yml
+.dockerignore
+.gitignore
+
+# Mengabaikan cache lokal agar tidak menimpa cache server
+/storage/logs/*
+/storage/framework/views/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
