@@ -1,59 +1,120 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MKAS - Web Management Keuangan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+MKAS adalah aplikasi manajemen keuangan berbasis web yang dirancang dengan pendekatan **mobile-first**. Aplikasi ini memungkinkan pengguna untuk mencatat transaksi masuk, keluar, dan iuran bulanan (deposit) dengan sistem persetujuan (approval) oleh administrator.
 
-## About Laravel
+## 🚀 Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 👤 Peran Pengguna
+*   **Admin:** Mengelola kategori, rekening pembayaran, menyetujui/menolak transaksi, dan melihat statistik global.
+*   **User:** Mencatat transaksi, melakukan iuran bulanan, dan memantau saldo serta riwayat keuangan pribadi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 💰 Manajemen Keuangan
+*   **Kas Masuk & Keluar:** Pencatatan transaksi dengan kewajiban upload bukti foto/struk.
+*   **Deposit (Iuran):** Sistem iuran bulanan untuk anggota dengan informasi rekening tujuan.
+*   **Sistem Approval:** Semua transaksi (Masuk/Keluar/Iuran) harus disetujui oleh Admin sebelum memengaruhi saldo.
+*   **Dashboard Interaktif:** Ringkasan saldo utama, total kas masuk, dan total kas keluar.
+*   **Riwayat Transaksi:** Filter berdasarkan bulan, kategori, dan status untuk memudahkan pelacakan.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🛠️ Fitur Admin
+*   **Manajemen Kategori:** Menambah dan mengedit kategori transaksi.
+*   **Manajemen Rekening:** Mengatur informasi rekening bank untuk pembayaran iuran.
+*   **Prioritas Pembayaran:** Mengelola rencana atau prioritas pembayaran pengeluaran.
+*   **Persetujuan Massal:** Halaman khusus untuk memproses transaksi yang berstatus *Pending*.
 
-## Learning Laravel
+### 📱 Pengalaman Pengguna (UX)
+*   **Mobile-First Design:** Dioptimalkan untuk penggunaan di smartphone.
+*   **Floating Action Button (FAB):** Akses cepat untuk mencatat transaksi baru melalui *bottom sheet*.
+*   **Navigasi Responsif:** Navigasi bawah (bottom navigation) untuk memudahkan akses di perangkat mobile.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🛠️ Teknologi yang Digunakan
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+*   **Framework:** [Laravel 12](https://laravel.com)
+*   **Frontend:** [Tailwind CSS](https://tailwindcss.com), [Alpine.js](https://alpinejs.dev)
+*   **Authentikasi:** [Laravel Breeze](https://laravel.com/docs/12.x/starter-kits#laravel-breeze)
+*   **Build Tool:** [Vite](https://vitejs.dev)
+*   **Database:** MySQL
+*   **Containerization:** Docker & Docker Compose
 
-## Laravel Sponsors
+## 📋 Prasyarat
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Sebelum memulai, pastikan Anda telah menginstal:
+*   PHP >= 8.2
+*   Composer
+*   Node.js & NPM
+*   Docker & Docker Compose (Opsional, untuk setup cepat)
 
-### Premium Partners
+## ⚙️ Instalasi
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Menggunakan Docker (Rekomendasi)
 
-## Contributing
+1.  Clone repository:
+    ```bash
+    git clone https://github.com/username/mkas-laravel.git
+    cd mkas-laravel
+    ```
+2.  Salin file environment:
+    ```bash
+    cp .env.example .env
+    ```
+3.  Jalankan container:
+    ```bash
+    docker-compose up -d
+    ```
+4.  Instal dependensi dan jalankan migrasi di dalam container:
+    ```bash
+    docker-compose exec app composer install
+    docker-compose exec app php artisan key:generate
+    docker-compose exec app php artisan migrate --seed
+    docker-compose exec app npm install
+    docker-compose exec app npm run build
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Instalasi Lokal
 
-## Code of Conduct
+1.  Clone repository dan masuk ke direktori:
+    ```bash
+    git clone https://github.com/username/mkas-laravel.git
+    cd mkas-laravel
+    ```
+2.  Instal dependensi PHP:
+    ```bash
+    composer install
+    ```
+3.  Salin `.env.example` ke `.env` dan sesuaikan konfigurasi database:
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+4.  Jalankan migrasi dan seeder:
+    ```bash
+    php artisan migrate --seed
+    ```
+5.  Instal dependensi frontend dan build:
+    ```bash
+    npm install
+    npm run build
+    ```
+6.  Jalankan server:
+    ```bash
+    php artisan serve
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🔐 Akun Default (Seeder)
 
-## Security Vulnerabilities
+Jika Anda menjalankan migrasi dengan `--seed`, gunakan akun berikut untuk mencoba:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+*   **Admin:** `admin@example.com` / `password`
+*   **User:** `user@example.com` / `password`
 
-## License
+## 📸 Preview Struktur Database
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+*   `users`: Menyimpan data pengguna, peran (admin/user), dan foto profil.
+*   `transactions`: Mencatat semua transaksi IN/OUT dengan status approval.
+*   `deposits`: Khusus untuk pencatatan iuran bulanan pengguna.
+*   `categories`: Kategori transaksi (Listrik, Makanan, Air, dll).
+*   `payment_accounts`: Informasi rekening bank tujuan iuran.
+*   `payment_plans`: Rencana prioritas pembayaran (Fitur Admin).
+
+## 📄 Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
