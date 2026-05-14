@@ -16,7 +16,7 @@ services:
     container_name: mkas-web
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8088:80"
     networks:
       - default
       - nginx-proxy
